@@ -1,40 +1,25 @@
-%macro check_rows(expr, severity=error, success_msg=%str(check_rows: All good));
-    %*;
-    %* 2023-04-19 M.Atkinson, A.Li  Original;
-    %*;
-    %* Perform a check on table(s) row counts using the expression provided;
-    %*;
-    %* Parms: ;
-    %*   expr           Unnamed parm. An expression indicating the tables for which row counts should be compared;
-    %*                  The expression can include:  table names (including libname, if needed or desired);
-    %*                                               constants (integers);
-    %*                                               arithmetic operator: +, -, or *;
-    %*                                               a comparison operator: =, >, <, <=, >=, or <>;
-    %*                  Note: always wrap the expression with the %str() function, as in the examples below;
-    %*;
-    %*   severity=      Named parm. Potential values: note, warning, error, abend;
-    %*                  Default:  error;
-    %*                  Will create a note, warning, or error message in the log;
-    %*                  If abend, will create an error message before aborting execution of the program;
-    %* What it does: ;
-    %*   Looks at row counts for tables in the expression, and checks whether the expression is true or not;
-    %*   If not, prints a message (note, warning, error) and/or abends;
-    %*   e.g. if expression is:   one = two;
-    %*        The macro will count the number of rows in dataset one and the number of rows in dataset two.;
-    %*        If these are not equal, a 
-    %*;
-    %*;
-    %*;
-    %* Sample calls: ;
-    %*   
-    %*   %check_rows(%str( one=two ));
-    %*   %check_rows(%str( bad_has_time = 0 ));
-    %*   %check_rows(%str( bad_has_time = 0 ), severity=abend);
-    %*   %check_rows(%str( good_records > 0 ));
-    %*   %check_rows(%str( mylib.all = details + mylib2.summary ));
-    %*
-    
-    
+ /**
+   @file
+   @brief Perform a check on table(s) row counts using the expression provided
+   @details Looks at row counts for tables in the provided expression and checks 
+    whether the expression is true or not. If not, prints a message (note, warning,
+    error) and/or abends.
+   Usage:
+ 
+       %check_rows(%str( one=two ));
+       %check_rows(%str( bad_has_time = 0 ));
+       %check_rows(%str( bad_has_time = 0 ), severity=abend);
+       %check_rows(%str( good_records > 0 ));
+       %check_rows(%str( mylib.all = details + mylib2.summary ));
+
+   @param expr= An expression indicating the tables for which row counts should be compared
+   @param severity= Potential values: note, warning, error, abend (default to error)
+ 
+   @author Mike Atkinson
+   @author Andrew Li 
+ **/
+
+%macro check_rows(expr, severity=error, success_msg=%str(check_rows: All good));    
     %* Check the severity parameter;
     
     %if (not %sysfunc(prxmatch(/\b&severity\b/i, note warning warn error err abend abort))) %then %do;
@@ -163,26 +148,6 @@
     %end;
     %return;
     
-    %mend check_rows;
+    %mend;
     
-    
-    * Test it;
-    
-    %check_rows(%str( one=two ));
-    %check_rows(%str( bad_has_time = 0 ));
-    %check_rows(%str( bad_has_time = 0 ), severity=abend);
-    %check_rows(%str( good_records - 3 > 0 ));
-    %check_rows(%str( pbfs.site_mailboxes + 8 = one ));
-    
-    
-    %check_rows(%str( mylib.all = details + mylib2.summary ));
-    
-    %check_rows(%str( 17 = 3 * 5 + 2 ));
-    
-    
-    %check_rows(%str( one<=3two ));
-    %check_rows(%str( bad_has_time 0 ));
-    %check_rows(%str( bad_has_time = 0 ), severity=hmmm);
-    %check_rows(%str( good_records >< 0 ));
-    %check_rows(%str( 3mylib.all = details + mylib2.1summary ));
     
