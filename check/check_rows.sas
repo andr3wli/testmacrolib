@@ -21,6 +21,8 @@
    @author Andrew Li 
  **/
 
+ %macro check_rows(expr, severity=error, commas=yes, success_msg=%str(Success!));
+
  %if (not %sysfunc(prxmatch(/\b&severity\b/i, note warning warn error err abend abort))) %then %do;
  %let error_msg = If specified, severity should be one of: note, warning, error, abend.  The default is error;
  %let error_prefix = Expression;
@@ -216,6 +218,3 @@ quit;
 %return;
 
 %mend check_rows;
-
-    
-    
